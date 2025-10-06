@@ -64,7 +64,7 @@ public class GameManager
         // Request all tables
         Conn.SubscriptionBuilder()
             .OnApplied(HandleSubscriptionApplied)
-            .Subscribe(new []{"SELECT * FROM RaycastDebuger"});
+            .Subscribe(new []{"SELECT * FROM RaycastDebugger"});
     }
     
     void HandleConnectError(Exception ex)

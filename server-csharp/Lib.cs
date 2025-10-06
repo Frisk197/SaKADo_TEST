@@ -376,8 +376,8 @@ public static partial class Module
         }
         
         stopWatch.Stop();
-        // if(stopWatch.ElapsedMilliseconds > 10)
-            Log.Debug("finished 1 point in " + stopWatch.ElapsedMilliseconds);
+        if(stopWatch.ElapsedMilliseconds > 10)
+            Log.Debug("finished " + points.Length + " point in " + stopWatch.ElapsedMilliseconds);
     }
 
 
