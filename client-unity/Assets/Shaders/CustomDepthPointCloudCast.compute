@@ -1,0 +1,33 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+
+uniform Texture2DArray<float> dpcc_DepthTexture;
+uniform float4x4 dpcc_Proj_Inv;
+RWStructuredBuffer<float3> DepthcastResults;
+
+int sampleSize;
+
+[numthreads(32,32,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    
+    int resultsIndex = id.x*sampleSize+id.y;
+    
+    if(id.x > sampleSize || id.y > sampleSize)
+        return;
+
+    // float2 texturePositionUV = float2((1.0/sampleSize)*id.x+(0.5/sampleSize), (1.0/sampleSize)*id.y+(0.5/sampleSize));
+    float2 texturePositionUV = float2((1.0/sampleSize)*id.x+(0.5/sampleSize), (1.0/sampleSize)*id.y+(0.5/sampleSize));
+
+    float3 pixel = float3(texturePositionUV, dpcc_DepthTexture[uint3(texturePositionUV, 0)]); // get the pixel of the depth texture
+
+    pixel *= 2; // make it clip space
+    pixel -= 1; //
+
+    float4 hcs = float4(pixel, 1); // homogeneous matrix
+
+    float4 transformed = mul(hcs, dpcc_Proj_Inv); 
+    
+    DepthcastResults[resultsIndex] = float3(transformed.xyz)/transformed.w;
+}

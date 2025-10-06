@@ -1,0 +1,32 @@
+// https://github.com/oculus-samples/Unity-DepthAPI/issues/16
+#include "DepthKit.hlsl"
+
+#pragma kernel CSMain
+
+#if defined(SHADER_API_D3D11) 
+#define FLIP_UVS 1 
+#endif
+
+RWStructuredBuffer<float3> RaycastResults;
+
+int NumSamples;
+int Eye;
+
+[numthreads(32, 32, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID) 
+{
+
+	if(id.x > NumSamples || id.y > NumSamples)
+		return;
+	
+	const uint i = (id.x * NumSamples) + id.y;
+	
+	float2 UV = float2(1.0/NumSamples * id.x + 0.5/NumSamples, 1.0/NumSamples * id.y + 0.5/NumSamples);
+
+	// depth compare to find closest point of intersection
+	const float envDepth = SampleDepthNDC(UV, Eye);
+	
+	// world pos position
+	const float3 depthWorld = NDCtoWorld(float3(UV, envDepth), Eye);
+	RaycastResults[i] = depthWorld;
+}
