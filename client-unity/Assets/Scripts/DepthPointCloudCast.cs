@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -78,7 +78,7 @@ public class DepthPointCloudCast : MonoBehaviour
     private void Update()
     {
         
-        UpdatePlayer();
+        // UpdatePlayer();
         
         if (useYieldMethod)
         {
@@ -271,7 +271,9 @@ public class DepthPointCloudCast : MonoBehaviour
                 for (int j = 0; j < pointsSentPerFrame; j++)
                 {
                     if(i*j<size)
-                        dbPoints.Add(new DbVector3(Random.Range(-10f, 10f), Random.Range(-10f, 10f), Random.Range(-10f, 10f)));
+                        dbPoints.Add(new DbVector3(Random.Range(0f, 1f)>=0.5?Random.Range(2f, 3f):Random.Range(-2f, -3f),
+                            Random.Range(0, 1)>0.5?Random.Range(2f, 3f):Random.Range(-2f, -3f),
+                            Random.Range(0, 1)>0.5?Random.Range(2f, 3f):Random.Range(-2f, -3f)));
                 }
 
                 while (Time.time < lastPointCloudSend+1/pointCloudUpdateRate)

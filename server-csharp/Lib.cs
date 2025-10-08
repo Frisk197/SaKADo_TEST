@@ -355,18 +355,29 @@ public static partial class Module
         stopWatch.Start();
         
         var voxelSize = (ctx.Db.VoxelWorld.Id.Find(1) ?? throw new Exception("World 1 doesn't exist.")).VoxelSize;
+
+        int countVoxelCheck = 0;
+        int countVoxelInsert = 0;
+        int countVoxelDelete = 0;
+        bool isFucked = false;
         
         foreach (var point in points)
         {
-            List<DbVector3> hitsPositions = VoxelPhysics.VoxelRayCastThrough(ctx, voxelSize, origin, point);
+            (List<DbVector3> hitsPositions, int voxelCheck, bool isFuckedHere) = VoxelPhysics.VoxelRayCastThrough(ctx, voxelSize, origin, point);
+            if (!isFucked && isFuckedHere)
+                isFucked = true;
+            countVoxelCheck += voxelCheck;
 
             foreach (var hit in hitsPositions)
                 ctx.Db.VoxelGrid.PositionHash.Delete(VoxelPhysics.RawPositionToVoxelPosition(voxelSize, hit).GetHashCode());
+
+            countVoxelDelete += hitsPositions.Count;
 
             var voxel = VoxelPhysics.RawPositionToVoxelPosition(voxelSize, point);
             
             if (!ctx.Db.VoxelGrid.PositionHash.Filter(voxel.GetHashCode()).Any())
             {
+                ++countVoxelInsert;
                 ctx.Db.VoxelGrid.Insert(new VoxelGrid
                 {
                     Position = voxel,
@@ -377,7 +388,7 @@ public static partial class Module
         
         stopWatch.Stop();
         if(stopWatch.ElapsedMilliseconds > 10)
-            Log.Debug("finished " + points.Length + " point in " + stopWatch.ElapsedMilliseconds);
+            Log.Debug("finished " + points.Length + " point in " + stopWatch.ElapsedMilliseconds + " with " + countVoxelCheck + " checks, " + countVoxelInsert + " inserts and " + countVoxelDelete + " deletes." + (isFucked?" and it's fucked.":""));
     }
 
 
@@ -448,10 +459,6 @@ public static partial class Module
                 return (true, finish, false);
             }
             
-            // stopWatch.Stop();
-            // if(stopWatch.ElapsedMilliseconds > 10)
-            //     Log.Debug("FastVoxelTraversalStep in " + stopWatch.ElapsedMilliseconds);
-
             if (DbVector3.Dot(direction, finish - nextPosition) <= 0) return (false, finish, false);
             
             return (false, nextPosition, DoesVoxelCollide(ref ctx, voxelSize, nextPosition));
@@ -473,40 +480,23 @@ public static partial class Module
             return (lastPosition, currentPosition, hit);
         }
         
-        public static List<DbVector3> VoxelRayCastThrough(ReducerContext ctx, float voxelSize, DbVector3 start, DbVector3 finish)
+        public static (List<DbVector3>, int, bool) VoxelRayCastThrough(ReducerContext ctx, float voxelSize, DbVector3 start, DbVector3 finish)
         {
-            // var stopWatch = new Stopwatch();
-            // stopWatch.Start();
             DbVector3 currentPosition = start;
             List<DbVector3> hitsPositions = new List<DbVector3>();
             
             int i = 0;
             do
             {
-                
                 ++i;
-                // if (stopWatch.ElapsedMilliseconds > 50)
-                // {
-                //     stopWatch.Stop();
-                //     Log.Debug("VoxelRayCastThrough took more than 50ms");
-                //     return hitsPositions;
-                // }
                 (bool isFucked, currentPosition, bool hit) = FastVoxelTraversalStep(ref ctx, voxelSize, currentPosition, finish);
                 if (isFucked)
-                {
-                    // stopWatch.Stop();
-                    // if(stopWatch.ElapsedMilliseconds > 10)
-                    //     Log.Debug("VoxelRayCastThrough " + i + " in " + stopWatch.ElapsedMilliseconds);
-                    return hitsPositions;
-                }
+                    return (hitsPositions, i, isFucked);
                 if (hit)
                     hitsPositions.Add(currentPosition);
                 
             } while (currentPosition != finish);
-            // stopWatch.Stop();
-            // if(stopWatch.ElapsedMilliseconds > 10)
-            //     Log.Debug("VoxelRayCastThrough " + i + " in " + stopWatch.ElapsedMilliseconds);
-            return hitsPositions;
+            return (hitsPositions, i, false);
         }
         
     }
