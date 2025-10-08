@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -271,7 +271,7 @@ public class DepthPointCloudCast : MonoBehaviour
                 for (int j = 0; j < pointsSentPerFrame; j++)
                 {
                     if(i*j<size)
-                        dbPoints.Add(new DbVector3(Random.Range(10f, 10f), Random.Range(10f, 10f), Random.Range(10f, 10f)));
+                        dbPoints.Add(new DbVector3(Random.Range(-10f, 10f), Random.Range(-10f, 10f), Random.Range(-10f, 10f)));
                 }
 
                 while (Time.time < lastPointCloudSend+1/pointCloudUpdateRate)
