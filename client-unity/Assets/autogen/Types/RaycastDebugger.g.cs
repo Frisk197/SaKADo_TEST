@@ -15,24 +15,24 @@ namespace SpacetimeDB.Types
     [DataContract]
     public sealed partial class RaycastDebugger
     {
-        [DataMember(Name = "Id")]
-        public uint Id;
-        [DataMember(Name = "PlayerIdentity")]
-        public SpacetimeDB.Identity PlayerIdentity;
-        [DataMember(Name = "TrackerTypeAttached")]
+        [DataMember(Name = "id")]
+        public ulong Id;
+        [DataMember(Name = "identity")]
+        public SpacetimeDB.Identity Identity;
+        [DataMember(Name = "tracker_type_attached")]
         public TrackerType TrackerTypeAttached;
-        [DataMember(Name = "Position")]
+        [DataMember(Name = "position")]
         public DbVector3 Position;
 
         public RaycastDebugger(
-            uint Id,
-            SpacetimeDB.Identity PlayerIdentity,
+            ulong Id,
+            SpacetimeDB.Identity Identity,
             TrackerType TrackerTypeAttached,
             DbVector3 Position
         )
         {
             this.Id = Id;
-            this.PlayerIdentity = PlayerIdentity;
+            this.Identity = Identity;
             this.TrackerTypeAttached = TrackerTypeAttached;
             this.Position = Position;
         }

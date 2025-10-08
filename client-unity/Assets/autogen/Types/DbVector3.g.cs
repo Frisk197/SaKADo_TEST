@@ -15,11 +15,11 @@ namespace SpacetimeDB.Types
     [DataContract]
     public sealed partial class DbVector3
     {
-        [DataMember(Name = "X")]
+        [DataMember(Name = "x")]
         public float X;
-        [DataMember(Name = "Y")]
+        [DataMember(Name = "y")]
         public float Y;
-        [DataMember(Name = "Z")]
+        [DataMember(Name = "z")]
         public float Z;
 
         public DbVector3(

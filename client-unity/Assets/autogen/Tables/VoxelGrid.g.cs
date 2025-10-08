@@ -17,30 +17,30 @@ namespace SpacetimeDB.Types
     {
         public sealed class VoxelGridHandle : RemoteTableHandle<EventContext, VoxelGrid>
         {
-            protected override string RemoteTableName => "VoxelGrid";
+            protected override string RemoteTableName => "voxel_grid";
 
-            public sealed class IdUniqueIndex : UniqueIndexBase<uint>
+            public sealed class IdUniqueIndex : UniqueIndexBase<ulong>
             {
-                protected override uint GetKey(VoxelGrid row) => row.Id;
+                protected override ulong GetKey(VoxelGrid row) => row.Id;
 
                 public IdUniqueIndex(VoxelGridHandle table) : base(table) { }
             }
 
             public readonly IdUniqueIndex Id;
 
-            public sealed class PositionHashIndex : BTreeIndexBase<int>
+            public sealed class IdxPositionXyzIndex : BTreeIndexBase<(long X, long Y, long Z)>
             {
-                protected override int GetKey(VoxelGrid row) => row.PositionHash;
+                protected override (long X, long Y, long Z) GetKey(VoxelGrid row) => (row.X, row.Y, row.Z);
 
-                public PositionHashIndex(VoxelGridHandle table) : base(table) { }
+                public IdxPositionXyzIndex(VoxelGridHandle table) : base(table) { }
             }
 
-            public readonly PositionHashIndex PositionHash;
+            public readonly IdxPositionXyzIndex IdxPositionXyz;
 
             internal VoxelGridHandle(DbConnection conn) : base(conn)
             {
                 Id = new(this);
-                PositionHash = new(this);
+                IdxPositionXyz = new(this);
             }
 
             protected override object GetPrimaryKey(VoxelGrid row) => row.Id;

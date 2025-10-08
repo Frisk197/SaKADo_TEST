@@ -53,13 +53,13 @@ namespace SpacetimeDB.Types
         [DataContract]
         public sealed partial class UpdatePlayer : Reducer, IReducerArgs
         {
-            [DataMember(Name = "headPosition")]
+            [DataMember(Name = "head_position")]
             public DbVector3 HeadPosition;
-            [DataMember(Name = "headRotation")]
+            [DataMember(Name = "head_rotation")]
             public DbQuaternion HeadRotation;
-            [DataMember(Name = "leftController")]
+            [DataMember(Name = "left_controller")]
             public ControllerInput LeftController;
-            [DataMember(Name = "rightController")]
+            [DataMember(Name = "right_controller")]
             public ControllerInput RightController;
 
             public UpdatePlayer(
@@ -83,7 +83,7 @@ namespace SpacetimeDB.Types
                 this.RightController = new();
             }
 
-            string IReducerArgs.ReducerName => "UpdatePlayer";
+            string IReducerArgs.ReducerName => "update_player";
         }
     }
 

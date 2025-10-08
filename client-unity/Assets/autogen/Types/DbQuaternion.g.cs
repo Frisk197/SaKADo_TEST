@@ -15,13 +15,13 @@ namespace SpacetimeDB.Types
     [DataContract]
     public sealed partial class DbQuaternion
     {
-        [DataMember(Name = "X")]
+        [DataMember(Name = "x")]
         public float X;
-        [DataMember(Name = "Y")]
+        [DataMember(Name = "y")]
         public float Y;
-        [DataMember(Name = "Z")]
+        [DataMember(Name = "z")]
         public float Z;
-        [DataMember(Name = "W")]
+        [DataMember(Name = "w")]
         public float W;
 
         public DbQuaternion(

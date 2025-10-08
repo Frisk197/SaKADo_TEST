@@ -14,12 +14,17 @@ namespace SpacetimeDB.Types
 {
     public sealed partial class RemoteReducers : RemoteBase
     {
-        public delegate void ConnectHandler(ReducerEventContext ctx);
-        public event ConnectHandler? OnConnect;
+        public delegate void TestHandler(ReducerEventContext ctx);
+        public event TestHandler? OnTest;
 
-        public bool InvokeConnect(ReducerEventContext ctx, Reducer.Connect args)
+        public void Test()
         {
-            if (OnConnect == null)
+            conn.InternalCallReducer(new Reducer.Test(), this.SetCallReducerFlags.TestFlags);
+        }
+
+        public bool InvokeTest(ReducerEventContext ctx, Reducer.Test args)
+        {
+            if (OnTest == null)
             {
                 if (InternalOnUnhandledReducerError != null)
                 {
@@ -31,7 +36,7 @@ namespace SpacetimeDB.Types
                 }
                 return false;
             }
-            OnConnect(
+            OnTest(
                 ctx
             );
             return true;
@@ -42,9 +47,15 @@ namespace SpacetimeDB.Types
     {
         [SpacetimeDB.Type]
         [DataContract]
-        public sealed partial class Connect : Reducer, IReducerArgs
+        public sealed partial class Test : Reducer, IReducerArgs
         {
-            string IReducerArgs.ReducerName => "connect";
+            string IReducerArgs.ReducerName => "test";
         }
+    }
+
+    public sealed partial class SetReducerFlags
+    {
+        internal CallReducerFlags TestFlags;
+        public void Test(CallReducerFlags flags) => TestFlags = flags;
     }
 }

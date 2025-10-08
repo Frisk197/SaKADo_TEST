@@ -15,32 +15,33 @@ namespace SpacetimeDB.Types
     [DataContract]
     public sealed partial class ControllerInput
     {
-        [DataMember(Name = "Position")]
+        [DataMember(Name = "position")]
         public DbVector3 Position;
-        [DataMember(Name = "Rotation")]
+        [DataMember(Name = "rotation")]
         public DbQuaternion Rotation;
-        [DataMember(Name = "IsAXPressed")]
-        public bool IsAxPressed;
-        [DataMember(Name = "WasAXPressedThisFrame")]
-        public bool WasAxPressedThisFrame;
-        [DataMember(Name = "IsBYPressed")]
-        public bool IsByPressed;
-        [DataMember(Name = "WasBYPressedThisFrame")]
-        public bool WasByPressedThisFrame;
-        [DataMember(Name = "IndexTriggerValue")]
-        public float IndexTriggerValue;
-        [DataMember(Name = "IndexTriggerPressedThisFrame")]
-        public bool IndexTriggerPressedThisFrame;
-        [DataMember(Name = "GripTriggerValue")]
-        public float GripTriggerValue;
-        [DataMember(Name = "GripTriggerPressedThisFrame")]
-        public bool GripTriggerPressedThisFrame;
-        [DataMember(Name = "JoystickPosition")]
+        [DataMember(Name = "joystick_position")]
         public DbVector2 JoystickPosition;
+        [DataMember(Name = "is_ax_pressed")]
+        public bool IsAxPressed;
+        [DataMember(Name = "was_ax_pressed_this_frame")]
+        public bool WasAxPressedThisFrame;
+        [DataMember(Name = "is_by_pressed")]
+        public bool IsByPressed;
+        [DataMember(Name = "was_by_pressed_this_frame")]
+        public bool WasByPressedThisFrame;
+        [DataMember(Name = "index_trigger_value")]
+        public float IndexTriggerValue;
+        [DataMember(Name = "index_trigger_pressed_this_frame")]
+        public bool IndexTriggerPressedThisFrame;
+        [DataMember(Name = "grip_trigger_value")]
+        public float GripTriggerValue;
+        [DataMember(Name = "grip_trigger_pressed_this_frame")]
+        public bool GripTriggerPressedThisFrame;
 
         public ControllerInput(
             DbVector3 Position,
             DbQuaternion Rotation,
+            DbVector2 JoystickPosition,
             bool IsAxPressed,
             bool WasAxPressedThisFrame,
             bool IsByPressed,
@@ -48,12 +49,12 @@ namespace SpacetimeDB.Types
             float IndexTriggerValue,
             bool IndexTriggerPressedThisFrame,
             float GripTriggerValue,
-            bool GripTriggerPressedThisFrame,
-            DbVector2 JoystickPosition
+            bool GripTriggerPressedThisFrame
         )
         {
             this.Position = Position;
             this.Rotation = Rotation;
+            this.JoystickPosition = JoystickPosition;
             this.IsAxPressed = IsAxPressed;
             this.WasAxPressedThisFrame = WasAxPressedThisFrame;
             this.IsByPressed = IsByPressed;
@@ -62,7 +63,6 @@ namespace SpacetimeDB.Types
             this.IndexTriggerPressedThisFrame = IndexTriggerPressedThisFrame;
             this.GripTriggerValue = GripTriggerValue;
             this.GripTriggerPressedThisFrame = GripTriggerPressedThisFrame;
-            this.JoystickPosition = JoystickPosition;
         }
 
         public ControllerInput()

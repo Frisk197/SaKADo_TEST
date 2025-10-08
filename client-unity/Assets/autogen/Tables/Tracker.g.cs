@@ -17,20 +17,20 @@ namespace SpacetimeDB.Types
     {
         public sealed class TrackerHandle : RemoteTableHandle<EventContext, Tracker>
         {
-            protected override string RemoteTableName => "Tracker";
+            protected override string RemoteTableName => "tracker";
 
-            public sealed class PlayerIdentityIndex : BTreeIndexBase<SpacetimeDB.Identity>
+            public sealed class IdxPlayerIdentityIndex : BTreeIndexBase<SpacetimeDB.Identity>
             {
-                protected override SpacetimeDB.Identity GetKey(Tracker row) => row.PlayerIdentity;
+                protected override SpacetimeDB.Identity GetKey(Tracker row) => row.Identity;
 
-                public PlayerIdentityIndex(TrackerHandle table) : base(table) { }
+                public IdxPlayerIdentityIndex(TrackerHandle table) : base(table) { }
             }
 
-            public readonly PlayerIdentityIndex PlayerIdentity;
+            public readonly IdxPlayerIdentityIndex IdxPlayerIdentity;
 
-            public sealed class TrackerIdUniqueIndex : UniqueIndexBase<uint>
+            public sealed class TrackerIdUniqueIndex : UniqueIndexBase<ulong>
             {
-                protected override uint GetKey(Tracker row) => row.TrackerId;
+                protected override ulong GetKey(Tracker row) => row.TrackerId;
 
                 public TrackerIdUniqueIndex(TrackerHandle table) : base(table) { }
             }
@@ -39,7 +39,7 @@ namespace SpacetimeDB.Types
 
             internal TrackerHandle(DbConnection conn) : base(conn)
             {
-                PlayerIdentity = new(this);
+                IdxPlayerIdentity = new(this);
                 TrackerId = new(this);
             }
 

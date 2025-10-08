@@ -15,28 +15,28 @@ namespace SpacetimeDB.Types
     [DataContract]
     public sealed partial class Tracker
     {
-        [DataMember(Name = "TrackerId")]
-        public uint TrackerId;
-        [DataMember(Name = "TrackerType")]
+        [DataMember(Name = "tracker_id")]
+        public ulong TrackerId;
+        [DataMember(Name = "tracker_type")]
         public TrackerType TrackerType;
-        [DataMember(Name = "PlayerIdentity")]
-        public SpacetimeDB.Identity PlayerIdentity;
-        [DataMember(Name = "Position")]
+        [DataMember(Name = "identity")]
+        public SpacetimeDB.Identity Identity;
+        [DataMember(Name = "position")]
         public DbVector3 Position;
-        [DataMember(Name = "Rotation")]
+        [DataMember(Name = "rotation")]
         public DbQuaternion Rotation;
 
         public Tracker(
-            uint TrackerId,
+            ulong TrackerId,
             TrackerType TrackerType,
-            SpacetimeDB.Identity PlayerIdentity,
+            SpacetimeDB.Identity Identity,
             DbVector3 Position,
             DbQuaternion Rotation
         )
         {
             this.TrackerId = TrackerId;
             this.TrackerType = TrackerType;
-            this.PlayerIdentity = PlayerIdentity;
+            this.Identity = Identity;
             this.Position = Position;
             this.Rotation = Rotation;
         }

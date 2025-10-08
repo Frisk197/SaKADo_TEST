@@ -15,17 +15,21 @@ namespace SpacetimeDB.Types
     [DataContract]
     public sealed partial class VoxelWorld
     {
-        [DataMember(Name = "Id")]
-        public uint Id;
-        [DataMember(Name = "VoxelSize")]
+        [DataMember(Name = "world_id")]
+        public ulong WorldId;
+        [DataMember(Name = "chunk_size")]
+        public ulong ChunkSize;
+        [DataMember(Name = "voxel_size")]
         public float VoxelSize;
 
         public VoxelWorld(
-            uint Id,
+            ulong WorldId,
+            ulong ChunkSize,
             float VoxelSize
         )
         {
-            this.Id = Id;
+            this.WorldId = WorldId;
+            this.ChunkSize = ChunkSize;
             this.VoxelSize = VoxelSize;
         }
 

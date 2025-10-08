@@ -17,23 +17,23 @@ namespace SpacetimeDB.Types
     {
         public sealed class VoxelWorldHandle : RemoteTableHandle<EventContext, VoxelWorld>
         {
-            protected override string RemoteTableName => "VoxelWorld";
+            protected override string RemoteTableName => "voxel_world";
 
-            public sealed class IdUniqueIndex : UniqueIndexBase<uint>
+            public sealed class WorldIdUniqueIndex : UniqueIndexBase<ulong>
             {
-                protected override uint GetKey(VoxelWorld row) => row.Id;
+                protected override ulong GetKey(VoxelWorld row) => row.WorldId;
 
-                public IdUniqueIndex(VoxelWorldHandle table) : base(table) { }
+                public WorldIdUniqueIndex(VoxelWorldHandle table) : base(table) { }
             }
 
-            public readonly IdUniqueIndex Id;
+            public readonly WorldIdUniqueIndex WorldId;
 
             internal VoxelWorldHandle(DbConnection conn) : base(conn)
             {
-                Id = new(this);
+                WorldId = new(this);
             }
 
-            protected override object GetPrimaryKey(VoxelWorld row) => row.Id;
+            protected override object GetPrimaryKey(VoxelWorld row) => row.WorldId;
         }
 
         public readonly VoxelWorldHandle VoxelWorld;

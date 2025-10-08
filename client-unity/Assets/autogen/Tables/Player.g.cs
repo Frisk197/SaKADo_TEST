@@ -17,7 +17,7 @@ namespace SpacetimeDB.Types
     {
         public sealed class PlayerHandle : RemoteTableHandle<EventContext, Player>
         {
-            protected override string RemoteTableName => "Player";
+            protected override string RemoteTableName => "player";
 
             public sealed class IdentityUniqueIndex : UniqueIndexBase<SpacetimeDB.Identity>
             {
@@ -28,9 +28,9 @@ namespace SpacetimeDB.Types
 
             public readonly IdentityUniqueIndex Identity;
 
-            public sealed class PlayerIdUniqueIndex : UniqueIndexBase<uint>
+            public sealed class PlayerIdUniqueIndex : UniqueIndexBase<ulong>
             {
-                protected override uint GetKey(Player row) => row.PlayerId;
+                protected override ulong GetKey(Player row) => row.PlayerId;
 
                 public PlayerIdUniqueIndex(PlayerHandle table) : base(table) { }
             }

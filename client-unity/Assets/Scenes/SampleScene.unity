@@ -9232,8 +9232,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 925b10d5fa584a96ab4bb2a5eb43990f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sampleSize: 20
-  pointsSentPerFrame: 10
+  sampleSize: 50
+  pointsSentPerFrame: 700
   useYieldMethod: 1
   dpcc_Proj:
   - e00: 0

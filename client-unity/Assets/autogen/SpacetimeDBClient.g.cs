@@ -472,10 +472,11 @@ namespace SpacetimeDB.Types
             var encodedArgs = update.ReducerCall.Args;
             return update.ReducerCall.ReducerName switch
             {
-                "Connect" => BSATNHelpers.Decode<Reducer.Connect>(encodedArgs),
-                "Disconnect" => BSATNHelpers.Decode<Reducer.Disconnect>(encodedArgs),
-                "SendPointsToServer" => BSATNHelpers.Decode<Reducer.SendPointsToServer>(encodedArgs),
-                "UpdatePlayer" => BSATNHelpers.Decode<Reducer.UpdatePlayer>(encodedArgs),
+                "connect" => BSATNHelpers.Decode<Reducer.Connect>(encodedArgs),
+                "disconnect" => BSATNHelpers.Decode<Reducer.Disconnect>(encodedArgs),
+                "send_points_to_server" => BSATNHelpers.Decode<Reducer.SendPointsToServer>(encodedArgs),
+                "test" => BSATNHelpers.Decode<Reducer.Test>(encodedArgs),
+                "update_player" => BSATNHelpers.Decode<Reducer.UpdatePlayer>(encodedArgs),
                 var reducer => throw new ArgumentOutOfRangeException("Reducer", $"Unknown reducer {reducer}")
             };
         }
@@ -500,6 +501,7 @@ namespace SpacetimeDB.Types
                 Reducer.Connect args => Reducers.InvokeConnect(eventContext, args),
                 Reducer.Disconnect args => Reducers.InvokeDisconnect(eventContext, args),
                 Reducer.SendPointsToServer args => Reducers.InvokeSendPointsToServer(eventContext, args),
+                Reducer.Test args => Reducers.InvokeTest(eventContext, args),
                 Reducer.UpdatePlayer args => Reducers.InvokeUpdatePlayer(eventContext, args),
                 _ => throw new ArgumentOutOfRangeException("Reducer", $"Unknown reducer {reducer}")
             };

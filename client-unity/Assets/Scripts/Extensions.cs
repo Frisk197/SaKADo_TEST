@@ -11,7 +11,7 @@ namespace SpacetimeDB.Types
         {
             return new Vector2(vec.X, vec.Y);
         }
-
+    
         public static implicit operator DbVector2(Vector2 vec)
         {
             return new DbVector2(vec.x, vec.y);

@@ -34,6 +34,8 @@ public class DepthPointCloudCast : MonoBehaviour
     private ComputeBuffer computeBuffer;
     [SerializeField] private ComputeShader computeShader;
     public DepthKitDriver DepthKitDriver;
+
+    private int sendCount = 1;
     
     private GameManager gameManager;
 
@@ -115,7 +117,7 @@ public class DepthPointCloudCast : MonoBehaviour
             lastPlayerUpdate = Time.time;
             
 
-            var raycastDebuggers = GameManager.Conn.Db.RaycastDebugger.PlayerIdentity.Filter(GameManager.LocalIdentity);
+            var raycastDebuggers = GameManager.Conn.Db.RaycastDebugger.IdxPlayerIdentity.Filter(GameManager.LocalIdentity);
 
             foreach (var raycastDebugger in raycastDebuggers)
             {
@@ -257,7 +259,7 @@ public class DepthPointCloudCast : MonoBehaviour
         {
             dbPoints.Add(new DbVector3(results[i].x, results[i].y, results[i].z));
         }
-        GameManager.Conn.Reducers.SendPointsToServer(lastCapturePosition, dbPoints);
+        GameManager.Conn.Reducers.SendPointsToServer(lastCapturePosition, dbPoints, 0);
     }
 
     public IEnumerator<bool> AsyncSendToSTDB(Vector3[] results)
@@ -271,7 +273,7 @@ public class DepthPointCloudCast : MonoBehaviour
                 for (int j = 0; j < pointsSentPerFrame; j++)
                 {
                     if(i*j<size)
-                        dbPoints.Add(new DbVector3(Random.Range(10f, 10f), Random.Range(10f, 10f), Random.Range(10f, 10f)));
+                        dbPoints.Add(new DbVector3(Random.Range(-10f, 10f), Random.Range(-10f, 10f), Random.Range(-10f, 10f)));
                 }
 
                 while (Time.time < lastPointCloudSend+1/pointCloudUpdateRate)
@@ -280,7 +282,7 @@ public class DepthPointCloudCast : MonoBehaviour
                 }
 
                 lastPointCloudSend = Time.time;
-                GameManager.Conn.Reducers.SendPointsToServer(new DbVector3(0,0,0), dbPoints);
+                GameManager.Conn.Reducers.SendPointsToServer(new DbVector3(0,0,0), dbPoints, sendCount++);
                 yield return true;
             }
             Debug.Log("done");

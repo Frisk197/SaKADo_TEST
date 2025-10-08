@@ -17,30 +17,30 @@ namespace SpacetimeDB.Types
     {
         public sealed class RaycastDebuggerHandle : RemoteTableHandle<EventContext, RaycastDebugger>
         {
-            protected override string RemoteTableName => "RaycastDebugger";
+            protected override string RemoteTableName => "raycast_debugger";
 
-            public sealed class IdUniqueIndex : UniqueIndexBase<uint>
+            public sealed class IdUniqueIndex : UniqueIndexBase<ulong>
             {
-                protected override uint GetKey(RaycastDebugger row) => row.Id;
+                protected override ulong GetKey(RaycastDebugger row) => row.Id;
 
                 public IdUniqueIndex(RaycastDebuggerHandle table) : base(table) { }
             }
 
             public readonly IdUniqueIndex Id;
 
-            public sealed class PlayerIdentityIndex : BTreeIndexBase<SpacetimeDB.Identity>
+            public sealed class IdxPlayerIdentityIndex : BTreeIndexBase<SpacetimeDB.Identity>
             {
-                protected override SpacetimeDB.Identity GetKey(RaycastDebugger row) => row.PlayerIdentity;
+                protected override SpacetimeDB.Identity GetKey(RaycastDebugger row) => row.Identity;
 
-                public PlayerIdentityIndex(RaycastDebuggerHandle table) : base(table) { }
+                public IdxPlayerIdentityIndex(RaycastDebuggerHandle table) : base(table) { }
             }
 
-            public readonly PlayerIdentityIndex PlayerIdentity;
+            public readonly IdxPlayerIdentityIndex IdxPlayerIdentity;
 
             internal RaycastDebuggerHandle(DbConnection conn) : base(conn)
             {
                 Id = new(this);
-                PlayerIdentity = new(this);
+                IdxPlayerIdentity = new(this);
             }
 
             protected override object GetPrimaryKey(RaycastDebugger row) => row.Id;

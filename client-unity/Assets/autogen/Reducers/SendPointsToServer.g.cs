@@ -14,12 +14,12 @@ namespace SpacetimeDB.Types
 {
     public sealed partial class RemoteReducers : RemoteBase
     {
-        public delegate void SendPointsToServerHandler(ReducerEventContext ctx, DbVector3 origin, System.Collections.Generic.List<DbVector3> points);
+        public delegate void SendPointsToServerHandler(ReducerEventContext ctx, DbVector3 origin, System.Collections.Generic.List<DbVector3> points, int callNum);
         public event SendPointsToServerHandler? OnSendPointsToServer;
 
-        public void SendPointsToServer(DbVector3 origin, System.Collections.Generic.List<DbVector3> points)
+        public void SendPointsToServer(DbVector3 origin, System.Collections.Generic.List<DbVector3> points, int callNum)
         {
-            conn.InternalCallReducer(new Reducer.SendPointsToServer(origin, points), this.SetCallReducerFlags.SendPointsToServerFlags);
+            conn.InternalCallReducer(new Reducer.SendPointsToServer(origin, points, callNum), this.SetCallReducerFlags.SendPointsToServerFlags);
         }
 
         public bool InvokeSendPointsToServer(ReducerEventContext ctx, Reducer.SendPointsToServer args)
@@ -39,7 +39,8 @@ namespace SpacetimeDB.Types
             OnSendPointsToServer(
                 ctx,
                 args.Origin,
-                args.Points
+                args.Points,
+                args.CallNum
             );
             return true;
         }
@@ -55,14 +56,18 @@ namespace SpacetimeDB.Types
             public DbVector3 Origin;
             [DataMember(Name = "points")]
             public System.Collections.Generic.List<DbVector3> Points;
+            [DataMember(Name = "call_num")]
+            public int CallNum;
 
             public SendPointsToServer(
                 DbVector3 Origin,
-                System.Collections.Generic.List<DbVector3> Points
+                System.Collections.Generic.List<DbVector3> Points,
+                int CallNum
             )
             {
                 this.Origin = Origin;
                 this.Points = Points;
+                this.CallNum = CallNum;
             }
 
             public SendPointsToServer()
@@ -71,7 +76,7 @@ namespace SpacetimeDB.Types
                 this.Points = new();
             }
 
-            string IReducerArgs.ReducerName => "SendPointsToServer";
+            string IReducerArgs.ReducerName => "send_points_to_server";
         }
     }
 

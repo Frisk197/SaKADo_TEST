@@ -15,27 +15,35 @@ namespace SpacetimeDB.Types
     [DataContract]
     public sealed partial class VoxelGrid
     {
-        [DataMember(Name = "Id")]
-        public uint Id;
-        [DataMember(Name = "PositionHash")]
-        public int PositionHash;
-        [DataMember(Name = "Position")]
-        public DbVector3 Position;
+        [DataMember(Name = "id")]
+        public ulong Id;
+        [DataMember(Name = "x")]
+        public long X;
+        [DataMember(Name = "y")]
+        public long Y;
+        [DataMember(Name = "z")]
+        public long Z;
+        [DataMember(Name = "chunk_data")]
+        public System.Collections.Generic.List<System.Collections.Generic.List<System.Collections.Generic.List<uint>>> ChunkData;
 
         public VoxelGrid(
-            uint Id,
-            int PositionHash,
-            DbVector3 Position
+            ulong Id,
+            long X,
+            long Y,
+            long Z,
+            System.Collections.Generic.List<System.Collections.Generic.List<System.Collections.Generic.List<uint>>> ChunkData
         )
         {
             this.Id = Id;
-            this.PositionHash = PositionHash;
-            this.Position = Position;
+            this.X = X;
+            this.Y = Y;
+            this.Z = Z;
+            this.ChunkData = ChunkData;
         }
 
         public VoxelGrid()
         {
-            this.Position = new();
+            this.ChunkData = new();
         }
     }
 }

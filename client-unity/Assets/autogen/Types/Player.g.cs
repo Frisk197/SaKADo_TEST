@@ -15,14 +15,14 @@ namespace SpacetimeDB.Types
     [DataContract]
     public sealed partial class Player
     {
-        [DataMember(Name = "Identity")]
+        [DataMember(Name = "identity")]
         public SpacetimeDB.Identity Identity;
-        [DataMember(Name = "PlayerId")]
-        public uint PlayerId;
+        [DataMember(Name = "player_id")]
+        public ulong PlayerId;
 
         public Player(
             SpacetimeDB.Identity Identity,
-            uint PlayerId
+            ulong PlayerId
         )
         {
             this.Identity = Identity;
