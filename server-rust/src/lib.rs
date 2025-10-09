@@ -16,22 +16,17 @@ use crate::tables::{logged_out_player, player, raycast_debugger, tracker, voxel_
 use crate::voxel_physics::VoxelPhysics;
 
 static LOOP_LIMIT: usize = 300;
+// for some reason, thread loops of 300,
+// client texture size of 50x50 and 700 points send per frame at 10fps
+// are the best settings measured as of 2025-10-09 17:08:32
 
 lazy_static!{
     static ref WORLD_GRID: HashMap<DbVector3, String> = HashMap::new();
 }
 
-
-#[reducer]
-pub fn test(ctx: &ReducerContext) {
-    let mut a = DbVector2::new(0f32, 0f32);
-    a += a+1f32;
-    let test = a.normalize();
-}
-
 #[reducer(init)]
 pub fn init(ctx: &ReducerContext){
-    ctx.db.voxel_world().insert(VoxelWorld{world_id: 0, chunk_size: 10, voxel_size: 0.1f32});
+    ctx.db.voxel_world().insert(VoxelWorld{world_id: 0, voxel_size: 0.05f32});
     WORLD_GRID.pin().clear()
 }
 
@@ -150,37 +145,27 @@ pub fn update_player(ctx: &ReducerContext, head_position: DbVector3, head_rotati
 }
 
 #[reducer]
-pub fn send_points_to_server(ctx: &ReducerContext, origin: DbVector3, points: Vec<DbVector3>, call_num: i32){
+pub fn send_points_to_server(ctx: &ReducerContext, origin: DbVector3, points: Vec<DbVector3>){
     let world_size = ctx.db.voxel_world().world_id().find(1).ok_or("world 1 not found").unwrap().voxel_size;
-
-    // for point in points{
-    //     let hit_points = VoxelPhysics::voxel_ray_cast_through(origin, point, world_size, &WORLD_GRID);
-    //     for hit in hit_points{
-    //         map.remove(&hit);
-    //     }
-    //     let voxel_position = VoxelPhysics::voxel_position(world_size, point);
-    //     if !map.contains_key(&voxel_position){
-    //         map.insert(voxel_position, "voxel".parse().unwrap());
-    //     }
-    // }
 
     let l = points.len();
     let loop_iter = f32::ceil(l as f32/LOOP_LIMIT as f32) as usize;
 
     rayon::scope(|s|{
         for i in 0..loop_iter {
-            let p = points.clone();
+            let points = points.clone();
             s.spawn(move |_| {
-                let points = p;
                 for j in (LOOP_LIMIT*i)..usize::min(LOOP_LIMIT*i+LOOP_LIMIT, l){
                     let hit_points = VoxelPhysics::voxel_ray_cast_through(origin, points[j], world_size, &WORLD_GRID);
                     let map = WORLD_GRID.pin();
                     for hit in hit_points{
                         map.remove(&hit);
                     }
-                    let voxel_position = VoxelPhysics::voxel_position(world_size, points[j]);
-                    if !map.contains_key(&voxel_position){
-                        map.insert(voxel_position, "voxel".parse().unwrap());
+                    if DbVector3::distance(DbVector3::new(origin.x, origin.y, 0f32), DbVector3::new(points[j].x, points[j].y, 0f32))>0.5f32{
+                        let voxel_position = VoxelPhysics::voxel_position(world_size, points[j]);
+                        if !map.contains_key(&voxel_position){
+                            map.insert(voxel_position, "voxel".parse().unwrap());
+                        }
                     }
                 }
                 // log::info!("finished call {call_num}, {i}")
@@ -194,40 +179,3 @@ pub fn debug_map_size(ctx: &ReducerContext){
     let l = WORLD_GRID.len();
     log::debug!("map is length: {l}");
 }
-
-
-
-
-
-// #[spacetimedb::table(name = person)]
-// pub struct Person {
-//     name: String
-// }
-//
-// #[spacetimedb::reducer(init)]
-// pub fn init(_ctx: &ReducerContext) {
-//     // Called when the module is initially published
-// }
-//
-// #[spacetimedb::reducer(client_connected)]
-// pub fn identity_connected(_ctx: &ReducerContext) {
-//     // Called everytime a new client connects
-// }
-//
-// #[spacetimedb::reducer(client_disconnected)]
-// pub fn identity_disconnected(_ctx: &ReducerContext) {
-//     // Called everytime a client disconnects
-// }
-//
-// #[spacetimedb::reducer]
-// pub fn add(ctx: &ReducerContext, name: String) {
-//     ctx.db.person().insert(Person { name });
-// }
-//
-// #[spacetimedb::reducer]
-// pub fn say_hello(ctx: &ReducerContext) {
-//     for person in ctx.db.person().iter() {
-//         log::info!("Hello, {}!", person.name);
-//     }
-//     log::info!("Hello, World!");
-// }

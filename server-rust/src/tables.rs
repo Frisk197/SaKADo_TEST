@@ -43,7 +43,7 @@ pub struct VoxelWorld{
     #[primary_key]
     #[auto_inc]
     pub world_id: u64,
-    pub chunk_size: u64,
+    // pub chunk_size: u64,
     pub voxel_size: f32,
 }
 
