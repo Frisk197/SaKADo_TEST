@@ -23,6 +23,7 @@ namespace SpacetimeDB.Types
     {
         public RemoteTables(DbConnection conn)
         {
+            AddTable(FunctionReadyCounter = new(conn));
             AddTable(LoggedOutPlayer = new(conn));
             AddTable(Player = new(conn));
             AddTable(RaycastDebugger = new(conn));

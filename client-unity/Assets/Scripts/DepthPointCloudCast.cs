@@ -56,6 +56,11 @@ public class DepthPointCloudCast : MonoBehaviour
     public List<GameObject> spheres;
 
 
+    public bool canExecSendPoints = false;
+    public bool canExecUpdatePlayer = false;
+    public bool dbSetup = false;
+
+
     private void Start()
     {
         spheres = new List<GameObject>();
@@ -79,6 +84,16 @@ public class DepthPointCloudCast : MonoBehaviour
 
     private void Update()
     {
+
+        if (!dbSetup)
+        {
+            if(!GameManager.IsConnected())
+                return;
+            GameManager.Conn.Db.FunctionReadyCounter.OnUpdate += updateFunctionReadyCounter;
+            GameManager.Conn.Db.FunctionReadyCounter.OnInsert += insertFunctionReadyCounter;
+            dbSetup = true;
+        }
+        
         
         UpdatePlayer();
         
@@ -107,6 +122,38 @@ public class DepthPointCloudCast : MonoBehaviour
             }
         }
     }
+    
+    public void insertFunctionReadyCounter(EventContext ctx, FunctionReadyCounter functionReadyCounter)
+    {
+        if (functionReadyCounter.Player == GameManager.LocalIdentity)
+        {
+            switch (functionReadyCounter.Function)
+            {
+                case FunctionsCounter.SendPointsToServer:
+                    canExecSendPoints = true;
+                    break;
+                case FunctionsCounter.UpdatePlayer:
+                    canExecUpdatePlayer = true;
+                    break;
+            }
+        }
+    }
+
+    public void updateFunctionReadyCounter(EventContext ctx, FunctionReadyCounter functionReadyCounterA, FunctionReadyCounter functionReadyCounterB)
+    {
+        if (functionReadyCounterA.Player == GameManager.LocalIdentity)
+        {
+            switch (functionReadyCounterA.Function)
+            {
+                case FunctionsCounter.SendPointsToServer:
+                    canExecSendPoints = true;
+                    break;
+                case FunctionsCounter.UpdatePlayer:
+                    canExecUpdatePlayer = true;
+                    break;
+            }
+        }
+    }
 
     public void UpdatePlayer()
     {
@@ -115,8 +162,9 @@ public class DepthPointCloudCast : MonoBehaviour
             Debug.Log("not connected");
             return;
         }
-        if (Time.time > (lastPlayerUpdate + 1 / playerUpdateRate))
+        if (canExecUpdatePlayer)
         {
+            canExecUpdatePlayer = false;
             lastPlayerUpdate = Time.time;
             
 
@@ -169,6 +217,8 @@ public class DepthPointCloudCast : MonoBehaviour
             };
             
             GameManager.Conn.Reducers.UpdatePlayer(transform.position, transform.rotation, theLeft, theRight);
+            
+            // Debug.Log(("done update"));
         }
     }
 
@@ -244,8 +294,9 @@ public class DepthPointCloudCast : MonoBehaviour
 
     public IEnumerator<bool> AsyncSendToSTDB(Vector3[] results)
     {
-        if (GameManager.IsConnected())
+        if (GameManager.IsConnected() && canExecSendPoints)
         {
+            canExecSendPoints = false;
             int size = results.Length;
             for (int i = 0; i < math.ceil(size / (double)pointsSentPerFrame); i++)
             {
@@ -264,12 +315,13 @@ public class DepthPointCloudCast : MonoBehaviour
                 lastPointCloudSend = Time.time;
                 GameManager.Conn.Reducers.SendPointsToServer(new DbVector3(0,0,0), dbPoints);
                 yield return true;
+                
             }
             Debug.Log("done");
         }
         else
         {
-            Debug.Log("not connected");
+            // Debug.Log("not connected");
         }
         yield return false;
     }

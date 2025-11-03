@@ -12,7 +12,7 @@ use db_vector2::DbVector2;
 use db_vector3::DbVector3;
 use crate::db_quaternion::DbQuaternion;
 use crate::other_types::{ControllerInput, TrackerType};
-use crate::tables::{logged_out_player, player, raycast_debugger, tracker, voxel_world, Player, RaycastDebugger, Tracker, VoxelWorld};
+use crate::tables::{function_ready_counter, logged_out_player, player, raycast_debugger, tracker, voxel_world, FunctionReadyCounter, FunctionsCounter, Player, RaycastDebugger, Tracker, VoxelWorld};
 use crate::voxel_physics::VoxelPhysics;
 
 static LOOP_LIMIT: usize = 300;
@@ -38,6 +38,18 @@ pub fn connect(ctx: &ReducerContext){
     } else {
         ctx.db.player().insert(Player{identity: ctx.sender, player_id:0});
     }
+    ctx.db.function_ready_counter().insert(FunctionReadyCounter{
+        id: 0,
+        player: ctx.sender,
+        function: FunctionsCounter::SendPointsToServer,
+        counter: 0
+    });
+    ctx.db.function_ready_counter().insert(FunctionReadyCounter{
+        id: 0,
+        player: ctx.sender,
+        function: FunctionsCounter::UpdatePlayer,
+        counter: 0
+    });
     ctx.db.tracker().insert(Tracker{
         tracker_id: 0,
         tracker_type: TrackerType::Head,
@@ -81,6 +93,7 @@ pub fn disconnect(ctx: &ReducerContext){
         ctx.db.player().identity().delete(&ctx.sender);
         ctx.db.tracker().idx_player_identity().delete(&ctx.sender);
         ctx.db.raycast_debugger().idx_player_identity().delete(&ctx.sender);
+        ctx.db.function_ready_counter().idx_player().delete(&ctx.sender);
     }
 }
 
@@ -89,6 +102,14 @@ pub fn update_player(ctx: &ReducerContext, head_position: DbVector3, head_rotati
 
     // let time = ctx.timestamp.to_duration_since_unix_epoch().unwrap().as_micros();
     // log::info!("update_player time : {time}");
+
+    let functions = ctx.db.function_ready_counter().idx_position_function().filter((ctx.sender, FunctionsCounter::UpdatePlayer));
+
+    for f in functions{
+        let mut new_f = f;
+        new_f.counter += 1;
+        ctx.db.function_ready_counter().id().update(new_f);
+    }
 
     let world_size = ctx.db.voxel_world().world_id().find(1).ok_or("world 1 not found").unwrap().voxel_size;
     let trackers = ctx.db.tracker().idx_player_identity().filter(ctx.sender);
@@ -153,6 +174,14 @@ pub fn send_points_to_server(ctx: &ReducerContext, origin: DbVector3, points: Ve
 
     // let time = ctx.timestamp.to_duration_since_unix_epoch().unwrap().as_micros();
     // log::info!("send_points_to_server time : {time}");
+
+    let functions = ctx.db.function_ready_counter().idx_position_function().filter((ctx.sender, FunctionsCounter::SendPointsToServer));
+
+    for f in functions{
+        let mut new_f = f;
+        new_f.counter += 1;
+        ctx.db.function_ready_counter().id().update(new_f);
+    }
 
     let world_size = ctx.db.voxel_world().world_id().find(1).ok_or("world 1 not found").unwrap().voxel_size;
 

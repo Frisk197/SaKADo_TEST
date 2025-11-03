@@ -9271,10 +9271,13 @@ MonoBehaviour:
   computeShader: {fileID: 7200000, guid: 6b7dbcafc25146a6b11dac5ceb6517ad, type: 3}
   DepthKitDriver: {fileID: 1748389295}
   headPosition: {fileID: 672380454}
-  playerUpdateRate: 30
-  pointCloudUpdateRate: 5
+  playerUpdateRate: 500
+  pointCloudUpdateRate: 500
   sphere: {fileID: 992697001176449284, guid: 6f00d6f244057404caf2354642ac949c, type: 3}
   spheres: []
+  canExecSendPoints: 1
+  canExecUpdatePlayer: 1
+  dbSetup: 0
 --- !u!114 &1748389295
 MonoBehaviour:
   m_ObjectHideFlags: 0

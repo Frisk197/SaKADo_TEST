@@ -3,6 +3,16 @@ use crate::db_quaternion::DbQuaternion;
 use crate::db_vector3::DbVector3;
 use crate::other_types::TrackerType;
 
+
+
+
+#[derive(Clone, Debug, SpacetimeType)]
+pub enum FunctionsCounter{
+    UpdatePlayer,
+    SendPointsToServer
+}
+
+
 #[table(name = tracker, index(name=idx_player_identity, btree(columns=[identity])))]
 #[derive(Debug, Clone)]
 pub struct Tracker{
@@ -57,4 +67,15 @@ pub struct VoxelGrid{
     pub y: i64,
     pub z: i64,
     pub chunk_data: Vec<Vec<Vec<u32>>>
+}
+
+#[table(name=function_ready_counter, public, index(name=idx_position_function, btree(columns=[player, function])), index(name=idx_player, btree(columns = [player])))]
+#[derive(Debug, Clone)]
+pub struct FunctionReadyCounter{
+    #[primary_key]
+    #[auto_inc]
+    pub id: u64,
+    pub player: Identity,
+    pub function: FunctionsCounter,
+    pub counter: u64
 }
