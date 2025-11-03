@@ -9232,8 +9232,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 925b10d5fa584a96ab4bb2a5eb43990f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sampleSize: 50
-  pointsSentPerFrame: 700
+  sampleSize: 30
+  pointsSentPerFrame: 900
   useYieldMethod: 1
   dpcc_Proj:
   - e00: 0
@@ -9271,8 +9271,8 @@ MonoBehaviour:
   computeShader: {fileID: 7200000, guid: 6b7dbcafc25146a6b11dac5ceb6517ad, type: 3}
   DepthKitDriver: {fileID: 1748389295}
   headPosition: {fileID: 672380454}
-  playerUpdateRate: 20
-  pointCloudUpdateRate: 10
+  playerUpdateRate: 30
+  pointCloudUpdateRate: 5
   sphere: {fileID: 992697001176449284, guid: 6f00d6f244057404caf2354642ac949c, type: 3}
   spheres: []
 --- !u!114 &1748389295

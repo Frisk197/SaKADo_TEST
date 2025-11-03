@@ -86,6 +86,10 @@ pub fn disconnect(ctx: &ReducerContext){
 
 #[reducer]
 pub fn update_player(ctx: &ReducerContext, head_position: DbVector3, head_rotation: DbQuaternion, left_controller: ControllerInput, right_controller: ControllerInput){
+
+    // let time = ctx.timestamp.to_duration_since_unix_epoch().unwrap().as_micros();
+    // log::info!("update_player time : {time}");
+
     let world_size = ctx.db.voxel_world().world_id().find(1).ok_or("world 1 not found").unwrap().voxel_size;
     let trackers = ctx.db.tracker().idx_player_identity().filter(ctx.sender);
     let raycast_debuggers = ctx.db.raycast_debugger().idx_player_identity().filter(ctx.sender);
@@ -146,6 +150,10 @@ pub fn update_player(ctx: &ReducerContext, head_position: DbVector3, head_rotati
 
 #[reducer]
 pub fn send_points_to_server(ctx: &ReducerContext, origin: DbVector3, points: Vec<DbVector3>){
+
+    // let time = ctx.timestamp.to_duration_since_unix_epoch().unwrap().as_micros();
+    // log::info!("send_points_to_server time : {time}");
+
     let world_size = ctx.db.voxel_world().world_id().find(1).ok_or("world 1 not found").unwrap().voxel_size;
 
     let l = points.len();

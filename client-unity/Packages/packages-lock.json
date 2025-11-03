@@ -5,7 +5,7 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "2e6ce4443fe211d766b8d29e03bcf018f5f99156"
+      "hash": "b0c441826ecc6c289ab073cdc616f6b2536422d6"
     },
     "com.meta.xr.mrutilitykit": {
       "version": "78.0.0",

@@ -111,7 +111,10 @@ public class DepthPointCloudCast : MonoBehaviour
     public void UpdatePlayer()
     {
         if (!GameManager.IsConnected())
+        {
+            Debug.Log("not connected");
             return;
+        }
         if (Time.time > (lastPlayerUpdate + 1 / playerUpdateRate))
         {
             lastPlayerUpdate = Time.time;
@@ -135,34 +138,8 @@ public class DepthPointCloudCast : MonoBehaviour
                         break;
                 }
             }
-            
-            var p = Vector3.forward;
-            var r = OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTouch);
 
-            float num1 = r.x * 2f;
-            float num2 = r.y * 2f;
-            float num3 = r.z * 2f;
-            float num4 = r.x * num1;
-            float num5 = r.y * num2;
-            float num6 = r.z * num3;
-            float num7 = r.x * num2;
-            float num8 = r.x * num3;
-            float num9 = r.y * num3;
-            float num10 = r.w * num1;
-            float num11 = r.w * num2;
-            float num12 = r.w * num3;
-            Vector3 vector3;
-            vector3.x = (float) ((1.0 - ((double) num5 + (double) num6)) * (double) p.x + ((double) num7 - (double) num12) * (double) p.y + ((double) num8 + (double) num11) * (double) p.z);
-            vector3.y = (float) (((double) num7 + (double) num12) * (double) p.x + (1.0 - ((double) num4 + (double) num6)) * (double) p.y + ((double) num9 - (double) num10) * (double) p.z);
-            vector3.z = (float) (((double) num8 - (double) num11) * (double) p.x + ((double) num9 + (double) num10) * (double) p.y + (1.0 - ((double) num4 + (double) num5)) * (double) p.z);
-
-
-            
-
-            spheres[1].transform.position =
-                OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch) + vector3 * 3;
-            
-            GameManager.Conn.Reducers.UpdatePlayer(transform.position, transform.rotation, new ControllerInput
+            var theLeft = new ControllerInput
             {
                 GripTriggerPressedThisFrame = OVRInput.GetDown(OVRInput.RawButton.LHandTrigger),
                 GripTriggerValue = OVRInput.Get(OVRInput.RawAxis1D.LHandTrigger),
@@ -170,25 +147,28 @@ public class DepthPointCloudCast : MonoBehaviour
                 IndexTriggerValue = OVRInput.Get(OVRInput.RawAxis1D.LIndexTrigger),
                 IsAxPressed = OVRInput.Get(OVRInput.RawButton.X),
                 IsByPressed = OVRInput.Get(OVRInput.RawButton.Y),
-                WasAxPressedThisFrame = OVRInput.GetDown(OVRInput.RawButton.X),
+                WasAxPressedThisFrame = true,//OVRInput.GetDown(OVRInput.RawButton.X),
                 WasByPressedThisFrame = OVRInput.GetDown(OVRInput.RawButton.Y),
                 JoystickPosition = OVRInput.Get(OVRInput.RawAxis2D.LThumbstick),
                 Position = OVRInput.GetLocalControllerPosition(OVRInput.Controller.LTouch),
                 Rotation = OVRInput.GetLocalControllerRotation(OVRInput.Controller.LTouch)
-            }, new ControllerInput
+            };
+            var theRight = new ControllerInput
             {
                 GripTriggerPressedThisFrame = OVRInput.GetDown(OVRInput.RawButton.RHandTrigger),
                 GripTriggerValue = OVRInput.Get(OVRInput.RawAxis1D.RHandTrigger),
                 IndexTriggerPressedThisFrame = OVRInput.GetDown(OVRInput.RawButton.RIndexTrigger),
                 IndexTriggerValue = OVRInput.Get(OVRInput.RawAxis1D.RIndexTrigger),
-                IsAxPressed = OVRInput.Get(OVRInput.RawButton.A),
+                IsAxPressed = true,//OVRInput.Get(OVRInput.RawButton.A),
                 IsByPressed = OVRInput.Get(OVRInput.RawButton.B),
                 WasAxPressedThisFrame = OVRInput.GetDown(OVRInput.RawButton.A),
                 WasByPressedThisFrame = OVRInput.GetDown(OVRInput.RawButton.B),
                 JoystickPosition = OVRInput.Get(OVRInput.RawAxis2D.RThumbstick),
                 Position = OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch),
                 Rotation = OVRInput.GetLocalControllerRotation(OVRInput.Controller.RTouch)
-            });
+            };
+            
+            GameManager.Conn.Reducers.UpdatePlayer(transform.position, transform.rotation, theLeft, theRight);
         }
     }
 
@@ -259,7 +239,7 @@ public class DepthPointCloudCast : MonoBehaviour
         {
             dbPoints.Add(new DbVector3(results[i].x, results[i].y, results[i].z));
         }
-        GameManager.Conn.Reducers.SendPointsToServer(lastCapturePosition, dbPoints, 0);
+        GameManager.Conn.Reducers.SendPointsToServer(lastCapturePosition, dbPoints);
     }
 
     public IEnumerator<bool> AsyncSendToSTDB(Vector3[] results)
@@ -282,7 +262,7 @@ public class DepthPointCloudCast : MonoBehaviour
                 }
 
                 lastPointCloudSend = Time.time;
-                GameManager.Conn.Reducers.SendPointsToServer(new DbVector3(0,0,0), dbPoints, sendCount++);
+                GameManager.Conn.Reducers.SendPointsToServer(new DbVector3(0,0,0), dbPoints);
                 yield return true;
             }
             Debug.Log("done");
